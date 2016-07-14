@@ -1,0 +1,7 @@
+MainForm = 39, -12, 872, 563, C, 22, 22, 858, 425, C
+frmAbout = 110, 110, 913, 570, C, 140, 180, 976, 582, C
+ModuleMain = 110, 110, 913, 570, 
+ModuleFunction = 44, 44, 847, 504, 
+frmSet = 198, 198, 1001, 659, C, 0, 0, 836, 402, C
+cDIBSection = 154, 154, 934, 597, I
+mIntelJPEGLibrary = 30, 113, 921, 513, C

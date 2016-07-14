@@ -1,0 +1,153 @@
+If PLTank(1).Show Then
+            With PLTank(1)
+                If GetAsyncKeyState(vbKeyS) < 0 Then
+                    If .FANG = TS_DOWN Then
+                        xi = .X \ WG: xb = .X - xi * WG
+                        yi = (.Y + LEN_TANK) \ WG: yb = .Y + LEN_TANK - yi * WG
+                        If yb = 0 And yi < 26 Then
+                            If Map(xi, yi) = 1 Or Map(xi, yi) = 3 Or Map(xi, yi) = 4 Then GoTo RT
+                            If Map(xi + 1, yi) = 1 Or Map(xi + 1, yi) = 3 Or Map(xi + 1, yi) = 4 Then GoTo RT
+                            If xi < 24 Then If xb > 4 And (Map(xi + 2, yi) = 1 Or Map(xi + 2, yi) = 3 Or Map(xi + 2, yi) = 4) Then GoTo RT
+                        End If
+                        For i = 0 To 3
+                            If EYTank(i).Show Then
+                                If EYTank(i).Y - .Y < 4 + LEN_TANK And .Y < EYTank(i).Y _
+                                    And .X > EYTank(i).X - LEN_TANK And .X < EYTank(i).X + LEN_TANK Then GoTo RT
+                            End If
+                        Next i
+                        If PLTank(1).Show Then
+                            If PLTank(1).Y - .Y < 4 + LEN_TANK And .Y < PLTank(1).Y _
+                                And .X > PLTank(1).X - LEN_TANK And .X < PLTank(1).X + LEN_TANK Then GoTo RT
+                        End If
+                        If .Y < 388 Then .Y = .Y + 4
+                    Else
+                        .FANG = TS_DOWN
+                    End If
+                ElseIf GetAsyncKeyState(vbKeyW) < 0 Then
+                    If .FANG = TS_UP Then
+                        xi = .X \ WG: xb = .X - xi * WG
+                        yi = .Y \ WG: yb = .Y - yi * WG
+                        If yb = 0 And yi > 0 Then
+                            If Map(xi, yi - 1) = 1 Or Map(xi, yi - 1) = 3 Or Map(xi, yi - 1) = 4 Then GoTo RT
+                            If Map(xi + 1, yi - 1) = 1 Or Map(xi + 1, yi - 1) = 3 Or Map(xi + 1, yi - 1) = 4 Then GoTo RT
+                            If xi < 24 Then If xb > 4 And (Map(xi + 2, yi - 1) = 1 Or Map(xi + 2, yi - 1) = 3 Or Map(xi + 2, yi - 1) = 4) Then GoTo RT
+                        End If
+                        For i = 0 To 3
+                            If EYTank(i).Show Then
+                                If .Y - EYTank(i).Y < 4 + LEN_TANK And .Y > EYTank(i).Y _
+                                    And .X > EYTank(i).X - LEN_TANK And .X < EYTank(i).X + LEN_TANK Then GoTo RT
+                            End If
+                        Next i
+                        If PLTank(1).Show Then
+                            If .Y - PLTank(1).Y < 4 + LEN_TANK And .Y > PLTank(1).Y _
+                                And .X > PLTank(1).X - LEN_TANK And .X < PLTank(1).X + LEN_TANK Then GoTo RT
+                        End If
+                        If .Y > 3 Then .Y = .Y - 4
+                    Else
+                        .FANG = TS_UP
+                    End If
+                ElseIf GetAsyncKeyState(vbKeyA) < 0 Then
+                    If .FANG = TS_LEFT Then
+                        xi = .X \ WG: xb = .X - xi * WG
+                        yi = .Y \ WG: yb = .Y - yi * WG
+                        If xb = 0 And xi > 0 Then
+                            If Map(xi - 1, yi) = 1 Or Map(xi - 1, yi) = 3 Or Map(xi - 1, yi) = 4 Then GoTo RT
+                            If Map(xi - 1, yi + 1) = 1 Or Map(xi - 1, yi + 1) = 3 Or Map(xi - 1, yi + 1) = 4 Then GoTo RT
+                            If yi < 24 Then If yb > 4 And (Map(xi - 1, yi + 2) = 1 Or Map(xi - 1, yi + 2) = 3 Or Map(xi - 1, yi + 2) = 4) Then GoTo RT
+                        End If
+                        For i = 0 To 3
+                            If EYTank(i).Show Then
+                                If EYTank(i).Y <= .Y + LEN_TANK And .Y <= EYTank(i).Y + LEN_TANK _
+                                    And .X - EYTank(i).X < 4 + LEN_TANK And .X > EYTank(i).X Then GoTo RT
+                            End If
+                        Next i
+                        If PLTank(1).Show Then
+                            If PLTank(1).Y <= .Y + LEN_TANK And .Y <= PLTank(1).Y + LEN_TANK _
+                                And .X - PLTank(1).X < 4 + LEN_TANK And .X > PLTank(1).X Then GoTo RT
+                        End If
+                        If .X > 3 Then .X = .X - 4
+                    Else
+                        .FANG = TS_LEFT
+                    End If
+                ElseIf GetAsyncKeyState(vbKeyD) < 0 Then
+                    If .FANG = TS_RIGHT Then
+                        xi = (.X + LEN_TANK) \ WG: xb = .X + LEN_TANK - xi * WG
+                        yi = .Y \ WG: yb = .Y - yi * WG
+                        If xb = 0 And xi < 26 Then
+                            If Map(xi, yi) = 1 Or Map(xi, yi) = 3 Or Map(xi, yi) = 4 Then GoTo RT
+                            If Map(xi, yi + 1) = 1 Or Map(xi, yi + 1) = 3 Or Map(xi, yi + 1) = 4 Then GoTo RT
+                            If yi < 24 Then If yb > 4 And (Map(xi, yi + 2) = 1 Or Map(xi, yi + 2) = 3 Or Map(xi, yi + 2) = 4) Then GoTo RT
+                        End If
+                        For i = 0 To 3
+                            If EYTank(i).Show Then
+                                If EYTank(i).Y <= .Y + LEN_TANK And .Y <= EYTank(i).Y + LEN_TANK _
+                                    And EYTank(i).X - .X < 4 + LEN_TANK And .X < EYTank(i).X Then GoTo RT
+                            End If
+                        Next i
+                        If PLTank(1).Show Then
+                            If PLTank(1).Y <= .Y + LEN_TANK And .Y <= PLTank(1).Y + LEN_TANK _
+                                And PLTank(1).X - .X < 4 + LEN_TANK And .X < PLTank(1).X Then GoTo RT
+                        End If
+                        If .X < 388 Then .X = .X + 4
+                    Else
+                        .FANG = TS_RIGHT
+                    End If
+                End If
+                
+                If Bonus.Show Then
+                    If Bonus.Y <= .Y + LEN_BLOCK And .Y <= Bonus.Y + LEN_BLOCK Then
+                        If .X >= Bonus.X - LEN_BLOCK And .X <= Bonus.X + LEN_BLOCK Then
+                            Bonus.Show = False
+                            EchoBonus Bonus.T, 1
+                        End If
+                    End If
+                End If
+                
+                If GetAsyncKeyState(vbKeyJ) < 0 Then
+                    If Not .ProWa Then
+                        If Not PBullet(MinBullet(1)).Show Then
+                            PBullet(MinBullet(1)).FANG = .FANG
+                            PBullet(MinBullet(1)).Show = True
+                            If .FANG = TS_UP Or .FANG = TS_DOWN Then
+                                PBullet(MinBullet(1)).X = .X + 10
+                            Else
+                                PBullet(MinBullet(1)).X = .X
+                            End If
+                            If .FANG = TS_LEFT Or .FANG = TS_RIGHT Then
+                                PBullet(MinBullet(1)).Y = .Y + 10
+                            Else
+                                PBullet(MinBullet(1)).Y = .Y
+                            End If
+                            PBullet(MinBullet(1)).TYPE = 0
+                            MinBullet(1) = (MinBullet(1) + 1) Mod 4 + 4
+                            sndPlaySound App_Path & "FIRE.wav", 1
+                        End If
+                    Else
+                        PBullet(MinBullet(1)).FANG = .FANG
+                        PBullet(MinBullet(1)).Show = True
+                        If .FANG = TS_UP Or .FANG = TS_DOWN Then
+                            PBullet(MinBullet(1)).X = .X + 10
+                        Else
+                            PBullet(MinBullet(1)).X = .X
+                        End If
+                        If .FANG = TS_LEFT Or .FANG = TS_RIGHT Then
+                            PBullet(MinBullet(1)).Y = .Y + 10
+                        Else
+                            PBullet(MinBullet(1)).Y = .Y
+                        End If
+                        PBullet(MinBullet(1)).TYPE = 1
+                        MinBullet(1) = (MinBullet(1) + 1) Mod 4 + 4
+                        sndPlaySound App_Path & "FIRE.wav", 1
+                    End If
+                End If
+            End With
+        Else
+            If GetAsyncKeyState(vbKeyJ) < 0 Then
+                If PLLife(0) > 0 And BornMovie(4).Show = False And PLLife(1) = 0 Then
+                    PLLife(0) = PLLife(0) - 1
+                    BornMovie(4).No = 1
+                    BornKeeper.Enabled = True
+                End If
+            End If
+        End If
+RT:

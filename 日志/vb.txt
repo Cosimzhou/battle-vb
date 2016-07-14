@@ -1,0 +1,1145 @@
+'Option Explicit
+Option Base 0
+Option Compare Text
+DefInt A-Z
+Const STARTWIDTH = 7500
+Const TANKV = 4
+Const SectionLen = 676
+
+Const ZHUANG = 1
+Const SHULIN = 2
+Const TIEQIANG = 3
+Const HESHUI = 4
+Const BINGDI = 5
+
+Dim Map(25, 25) As Byte
+Dim n As Integer
+Private IgnoreText As Boolean
+Dim ni As Long
+Dim Rs As Long
+Dim Ky As Long
+Dim s As String
+Dim Length As Long
+Dim King As Boolean
+Dim Timers As Boolean
+Dim Vy(1 To 4) As Long
+Dim Fvw As Long
+Dim Rssx As Long
+Dim KinTQ As Boolean
+Dim TQbx As Boolean
+Dim WD As Boolean
+Dim TaS As Long
+Dim Ta(1 To 6) As POINTAPI
+Dim MS As Long
+Dim d As Long
+'Dim j(1 To 16) As Long
+Dim m(1 To 16) As String
+Dim ELX(1 To 5) As Long
+Dim cx As Long
+Dim CXWZ As Long
+Dim ZDD(1 To 4) As POINTAPI
+Dim BZD As Boolean
+Dim BBZD As Boolean
+Dim EBZD(1 To 16) As Boolean
+Dim EBBZD(1 To 16) As Boolean
+Dim EBL(1 To 16) As Long
+Dim Mytank(1 To 2) As Tank
+Dim Mytankz(1 To 4) As POINTAPI
+Dim ETank(1 To 16) As Tank
+Dim Etankz(1 To 16) As POINTAPI
+Dim ZD As Long
+Dim LD As Long
+Dim BL As Long
+Dim EL(1 To 16) As Long
+Dim ELD(1 To 16) As Long
+Dim ED(1 To 16) As Long
+Dim ELDD(1 To 16) As POINTAPI
+Dim i As Long
+Dim c(1 To 16) As Long
+Dim L As Long
+Dim Picsl As Long
+Dim Picsls As String
+Dim file As String
+Dim L1 As Boolean
+Dim Vi As Boolean
+Dim Tex As String, FS As String
+Dim tc As Integer
+Dim BBZDL As Integer
+Private Sub About_Click()
+    frmAbout.Show vbModal
+End Sub
+Private Sub Afresh_Click()
+    PicBack.Cls
+    Fvw = 0
+    TQbx = False
+    MS = 20
+    tc = 1
+    Randomize
+    King = False
+    TQN = TQN - 8
+    Vi = False
+    For r = 1 To ZQN
+        ZQ(r).Show = False
+    Next r
+    Mytank(1).x = 139
+    Mytank(1).y = 384
+    Mytank(1).ZDS = 10
+    Mytank(1).FHP = 2
+    For t = 1 To 4
+        ZDD(t).x = -100
+        ZDD(t).y = -100
+    Next t
+    For t = 1 To 16
+        ETank(t).Show = False
+        ETank(t).FHP = 0
+        ETank(t).x = -100
+        ETank(t).y = -100
+        ELDD(t).x = ETank(t).x
+        ELDD(t).y = ETank(t).y
+    Next t
+    For t = 1 To 4
+        Mytank(1).FER(t) = 2
+    Next t
+    For i = 0 To 19
+        Image3(i).Visible = True
+    Next i
+    
+    Tomin Mytank(1).x, Mytank(1).y, 0, 32, 0, 0, 32, 26, PicBack.hDC, PicMytank(0).hDC
+    
+    i = 1
+    ZD = 3
+    L1 = True
+    
+    Read
+    
+    BeginScreen
+    
+    BeginTo
+    
+    ETankBegin
+    
+    Timer1.Enabled = False
+    RndEnemy.Enabled = False
+    Timer8.Enabled = False
+    Form_Load
+End Sub
+Private Sub Begin_Click()
+    For d = 1 To 6
+        Ta(d).x = -100
+        Ta(d).y = -100
+    Next d
+    Timer1.Enabled = True
+    RndEnemy.Enabled = True
+    Timer8.Enabled = True
+
+End Sub
+Private Sub Bofa_Click()
+Bofa.Checked = True
+Stop1.Checked = False
+Luy.Checked = False
+VideoTimer.Enabled = True
+Picsl = 0
+Vi = False
+End Sub
+
+Private Sub Form_Load()
+    PicBack.Move 0, 0
+    Randomize
+    tc = 1
+    FS = IIf(Right(App.path, 1) = "\", App.path, App.path & "\") & "Map.bin"
+
+    'MainForm.Width = STARTWIDTH '7500
+    MS = 20
+    Vi = False
+    'For r = 1 To ZQN
+     '   ZQ(r).Show = False
+    'Next r
+    Mytank(1).x = 139
+    Mytank(1).y = 384
+    Mytank(1).ZDS = 10
+    Mytank(1).FHP = 2
+    For t = 1 To 4
+        ZDD(t).x = -100
+        ZDD(t).y = -100
+    Next t
+    For t = 1 To 16
+        ETank(t).Show = False
+    Next t
+    For t = 1 To 4
+        Mytank(1).FER(t) = 2
+        Vy(t) = 2
+    Next t
+    Tomin Mytank(1).x, Mytank(1).y, 0, 32, 0, 0, 32, 26, PicBack.hDC, PicMytank(0).hDC
+    i = 1
+    ZD = 3
+    n = 1
+    L1 = True
+    
+    Read
+    BeginScreen
+    BeginTo
+    ETankBegin
+End Sub
+Sub BeginTo()
+    Dim x As Integer, y As Integer, xb As Boolean, yb As Boolean
+    If King = False Then
+        Tomin 192, 384, 0, 32, 0, 0, 32, 32, PicBack.hDC, PicIcon(1).hDC
+    Else
+        Tomin 192, 384, 0, 32, 0, 0, 32, 32, PicBack.hDC, PicIcon(0).hDC
+    End If
+
+    If KinTQ = True Then
+        Map(11, 25) = TIEQIANG
+        Map(11, 24) = TIEQIANG
+        Map(11, 23) = TIEQIANG
+        Map(12, 23) = TIEQIANG
+        Map(13, 23) = TIEQIANG
+        Map(14, 24) = TIEQIANG
+        Map(14, 25) = TIEQIANG
+        Map(14, 23) = TIEQIANG
+        KinTQ = False
+    End If
+    
+    x = Mytank(1).x \ 16
+    xb = Mytank(1).x / 16 - x
+    y = Mytank(1).y \ 16
+    yb = Mytank(1).y / 16 - y
+    Select Case Mytank(1).FAS
+    Case 1 'left
+        If x < 0 Then
+        If Map(x - 1, y) Then
+        End If
+        End If
+    Case 3 'up
+        If y > 0 Then
+            If Map(x, y - 1) Then Mytank(1).FER(3) = 0
+            If x < 25 Then If Map(x + 1, y - 1) Then Mytank(1).FER(3) = 0
+            If x < 24 Then If (Map(x + 2, y - 1) And xb) Then Mytank(1).FER(3) = 0
+        End If
+    End Select
+    
+    
+End Sub
+Sub BeginScreen()
+    lblTitle.Visible = False
+    Tomin 192, 384, 0, 32, 0, 0, 32, 32, PicBack.hDC, PicIcon(1).hDC
+    For i = 0 To 25
+        For j = 0 To 25
+            If Map(i, j) > 0 And Map(i, j) < 6 Then
+                If Map(i, j) = 2 Then
+                    Tomin i * 16, j * 16, 16, 0, 0, 0, 16, 16, PicBack.hDC, PicDX(1).hDC
+                Else
+                    BitBlt PicBack.hDC, i * 16, j * 16, 16, 16, PicDX(Map(i, j) - 1).hDC, 0, 0, SRCCOPY
+                End If
+            End If
+        Next j
+    Next i
+End Sub
+
+Private Sub Luy_Click()
+Bofa.Checked = False
+Stop1.Checked = False
+Luy.Checked = True
+VideoTimer.Enabled = True
+Vi = True
+End Sub
+Private Sub Option_Click()
+    n = InputBox("请输入选择关卡的序列号:", "选择关卡", 1)
+    Call Afresh_Click
+End Sub
+Private Sub picBack_KeyDown(KeyCode As Integer, Shift As Integer)
+    If Timer1.Enabled = True And Mytank(1).FHP > 0 Then Ky = KeyCode
+End Sub
+Private Sub picBack_KeyUp(KeyCode As Integer, Shift As Integer)
+    If KeyCode = 32 Then
+        i = 0
+        L = 0
+        BL = 0
+        BZD = False
+        BBZD = False
+        tc = IIf((tc + 1) Mod 4 <> 0, (tc + 1) Mod 4, 4)
+        Mytankz(tc).x = Mytank(1).x
+        Mytankz(tc).y = Mytank(1).y
+        Select Case ZD
+        Case 1
+            LD = 1
+        Case 2
+            LD = 2
+        Case 3
+            LD = 3
+        Case 4
+            LD = 4
+        End Select
+    End If
+End Sub
+Sub CheckKeyDown()
+    If Mytank(1).FHP > 0 Then
+        Select Case Ky
+        Case 37             '左
+            ZD = 1
+            If Mytank(1).x >= 0 Then Mytank(1).x = Mytank(1).x - Mytank(1).FER(1) * TANKV
+        Case 39             '右
+            ZD = 2
+            If Mytank(1).x <= 400 Then Mytank(1).x = Mytank(1).x + Mytank(1).FER(2) * TANKV
+        Case 38             '上
+            ZD = 3
+            If Mytank(1).y >= 0 Then Mytank(1).y = Mytank(1).y - Mytank(1).FER(3) * TANKV
+        Case 40             '下
+            ZD = 4
+            If Mytank(1).y <= 400 Then Mytank(1).y = Mytank(1).y + Mytank(1).FER(4) * TANKV
+        End Select
+    End If
+End Sub
+
+Private Sub Quit_Click()
+    End
+End Sub
+Private Sub Save_Click()
+    Dim bi As BROWSEINFO
+    Dim r As Long
+    Dim pidl As Long
+    Dim path As String
+    Dim pos As Integer
+    '句柄
+    bi.hOwner = Me.hwnd
+    '展开根目录
+    bi.pidlRoot = 0&
+    '列表框标题
+    bi.lpszTitle = "请选择文件保存路径："
+    '规定只能选择文件夹，其他无效
+    bi.ulFlags = BIF_RETURNONLYFSDIRS
+    '调用API函数显示列表框
+    'pidl = SHBrowseForFolder(bi)
+    '利用API函数获取返回的路径
+    path = Space$(512)
+    'r = SHGetPathFromIDList(ByVal pidl&, ByVal path)
+    If r Then
+        pos = InStr(path, Chr$(0))
+        Tex = Left(path, pos - 1)
+    Else
+        Tex = ""
+    End If
+End Sub
+Private Sub SaveAs_Click()
+    CoDi.ShowSave
+    If CoDi.FileName <> "" Then SavePicture PicBack.Image, CoDi.FileName + ".bmp"
+    'End If
+End Sub
+
+
+Private Sub Stop_Click()
+    Timer1.Enabled = Not Timer1.Enabled
+    Losser.Enabled = Not Timer1.Enabled
+    VideoTimer.Enabled = Not Timer1.Enabled
+    RndEnemy.Enabled = Not Timer1.Enabled
+End Sub
+Private Sub Stop1_Click()
+    Bofa.Checked = False
+    Stop1.Checked = True
+    Luy.Checked = False
+    VideoTimer.Enabled = False
+End Sub
+Private Sub Timer1_Timer()
+    PicBack.Picture = LoadPicture()
+    PicBack.Cls
+    CheckKeyDown
+    Ky = 0
+    Bw
+    BeginScreen
+    For t = 1 To 4
+        Mytank(1).FER(t) = Vy(t)
+    Next t
+    If Mytank(1).FHP > 0 Then
+        'For t = 1 To 4
+        Select Case LD
+        Case 1
+            i = i + Mytank(1).ZDS
+            ZDD(tc).x = Mytankz(tc).x - i + 15
+            ZDD(tc).y = Mytankz(tc).y + 5
+            Tomin ZDD(tc).x, ZDD(tc).y, 32, 16, 32, 0, 16, 16, PicBack.hDC, PicBZ(0).hDC
+        Case 2
+            i = i + Mytank(1).ZDS
+            ZDD(tc).x = Mytankz(tc).x + i
+            ZDD(tc).y = Mytankz(tc).y + 5
+            Tomin ZDD(tc).x, ZDD(tc).y, 48, 16, 48, 0, 16, 16, PicBack.hDC, PicBZ(0).hDC
+        Case 3
+            i = i + Mytank(1).ZDS
+            ZDD(tc).y = Mytankz(tc).y - i + 15
+            ZDD(tc).x = Mytankz(tc).x + 5
+            Tomin ZDD(tc).x, ZDD(tc).y, 0, 16, 0, 0, 16, 16, PicBack.hDC, PicBZ(0).hDC
+        Case 4
+            i = i + Mytank(1).ZDS
+            ZDD(tc).y = Mytankz(tc).y + i
+            ZDD(tc).x = Mytankz(tc).x + 5
+            Tomin ZDD(tc).x, ZDD(tc).y, 16, 16, 16, 0, 16, 16, PicBack.hDC, PicBZ(0).hDC
+        End Select
+        'Next t
+        Select Case ZD
+        Case 1
+            Tomin Mytank(1).x, Mytank(1).y, 84, 32, 84, 0, 32, 32, PicBack.hDC, PicMytank(0).hDC
+        Case 2
+            Tomin Mytank(1).x, Mytank(1).y, 52, 32, 52, 0, 32, 32, PicBack.hDC, PicMytank(0).hDC
+        Case 3
+            Tomin Mytank(1).x, Mytank(1).y, 0, 32, 0, 0, 32, 32, PicBack.hDC, PicMytank(0).hDC
+        Case 4
+            Tomin Mytank(1).x, Mytank(1).y, 26, 32, 26, 0, 32, 32, PicBack.hDC, PicMytank(0).hDC
+        End Select
+    End If
+    If ETank(1).FHP > 0 Then ETankTo (1)
+    If ETank(2).FHP > 0 Then ETankTo (2)
+    If ETank(3).FHP > 0 Then ETankTo (3)
+    If ETank(4).FHP > 0 Then ETankTo (4)
+    If ETank(5).FHP > 0 Then ETankTo (5)
+    If ETank(6).FHP > 0 Then ETankTo (6)
+    If ETank(7).FHP > 0 Then ETankTo (7)
+    If ETank(8).FHP > 0 Then ETankTo (8)
+    If ETank(9).FHP > 0 Then ETankTo (9)
+    If ETank(10).FHP > 0 Then ETankTo (10)
+    If ETank(11).FHP > 0 Then ETankTo (11)
+    If ETank(12).FHP > 0 Then ETankTo (12)
+    If ETank(13).FHP > 0 Then ETankTo (13)
+    If ETank(14).FHP > 0 Then ETankTo (14)
+    If ETank(15).FHP > 0 Then ETankTo (15)
+    If ETank(16).FHP > 0 Then ETankTo (16)
+    
+    If ETank(1).FHP > 0 And Timers = False Then sETankTo (1)
+    If ETank(2).FHP > 0 And Timers = False Then sETankTo (2)
+    If ETank(3).FHP > 0 And Timers = False Then sETankTo (3)
+    If ETank(4).FHP > 0 And Timers = False Then sETankTo (4)
+    If ETank(5).FHP > 0 And Timers = False Then sETankTo (5)
+    If ETank(6).FHP > 0 And Timers = False Then sETankTo (6)
+    If ETank(7).FHP > 0 And Timers = False Then sETankTo (7)
+    If ETank(8).FHP > 0 And Timers = False Then sETankTo (8)
+    If ETank(9).FHP > 0 And Timers = False Then sETankTo (9)
+    If ETank(10).FHP > 0 And Timers = False Then sETankTo (10)
+    If ETank(11).FHP > 0 And Timers = False Then sETankTo (11)
+    If ETank(12).FHP > 0 And Timers = False Then sETankTo (12)
+    If ETank(13).FHP > 0 And Timers = False Then sETankTo (13)
+    If ETank(14).FHP > 0 And Timers = False Then sETankTo (14)
+    If ETank(15).FHP > 0 And Timers = False Then sETankTo (15)
+    If ETank(16).FHP > 0 And Timers = False Then sETankTo (16)
+
+    eTankLd
+    ETankBegin
+    HitEachCheck
+    If L <= 160 Then
+        'For t = 1 To 4
+        If LD = 1 And ZDD(tc).x <= 0 Then
+            L = L + 32
+            Tomin 0, Mytank(1).y - 5, 32, L, 0, L, 32, 32, PicBack.hDC, PicBZ(1).hDC
+        End If
+        If LD = 2 And ZDD(tc).x >= 426 Then
+            L = L + 32
+            Tomin 400, Mytank(1).y - 5, 32, L, 0, L, 32, 32, PicBack.hDC, PicBZ(1).hDC
+        End If
+        If LD = 3 And ZDD(tc).y <= 0 Then
+            L = L + 32
+            Tomin Mytank(1).x - 5, 0, 32, L, 0, L, 32, 32, PicBack.hDC, PicBZ(1).hDC
+        End If
+        If LD = 4 And ZDD(tc).y >= 426 Then
+            L = L + 32
+            Tomin Mytank(1).x - 5, 400, 32, L, 0, L, 32, 32, PicBack.hDC, PicBZ(1).hDC
+            
+        End If
+       ' Next t
+    End If
+    ExplodeBomb
+    BeginTo
+    For d = 1 To 6
+        BitBlt PicBack.hDC, Ta(d).x, Ta(d).y, 32, 32, PicIcon(d + 1).hDC, 0, 0, SRCCOPY
+    Next d
+    If L <= 160 And BZD = True Then
+        L = L + 32
+        Tomin ZDD(tc).x - 8, ZDD(tc).y - 8, 32, L, 0, L, 32, 32, PicBack.hDC, PicBZ(1).hDC
+    End If
+    If BL <= 384 And BBZD = True Then
+        BL = BL + 64
+        Tomin ZDD(BBZDL).x - 16, ZDD(BBZDL).y - 16, 64, BL, 0, BL, 64, 64, PicBack.hDC, PicBZ(2).hDC
+    End If
+    For d = 1 To 16
+        If EL(d) <= 160 And EBZD(d) = True Then
+            EL(d) = EL(d) + 32
+            Tomin ELDD(d).x - 8, ELDD(d).y - 8, 32, EL(d), 0, EL(d), 32, 32, PicBack.hDC, PicBZ(1).hDC
+        End If
+        If EBL(d) <= 384 And EBBZD(d) = True Then
+            EBL(d) = EBL(d) + 64
+            Tomin ELDD(d).x - 16, ELDD(d).y - 16, 64, EBL(d), 0, EBL(d), 64, 64, PicBack.hDC, PicBZ(2).hDC
+        End If
+    Next d
+End Sub
+Sub Read()
+    Open FS For Binary Access Read As #1 Len = SectionLen
+        Get #1, (n - 1) * SectionLen + 1, Map
+    Close
+End Sub
+
+Sub ETankTo(Item) '
+    Dim fg
+    fg = (Item - 1) Mod 9
+    Select Case ETank(Item).FAS
+    Case 1             '左
+        Tomin ETank(Item).x, ETank(Item).y, 64, 32, 64, 0, 32, 32, PicBack.hDC, Picetank(fg).hDC
+    Case 2             '右
+        Tomin ETank(Item).x, ETank(Item).y, 96, 32, 96, 0, 32, 32, PicBack.hDC, Picetank(fg).hDC
+    Case 3             '上
+        Tomin ETank(Item).x, ETank(Item).y, 0, 32, 0, 0, 32, 32, PicBack.hDC, Picetank(fg).hDC
+    Case 4             '下
+        Tomin ETank(Item).x, ETank(Item).y, 32, 32, 32, 0, 32, 32, PicBack.hDC, Picetank(fg).hDC
+    End Select
+End Sub
+
+Sub sETankTo(Item)
+    Select Case ETank(Item).FAS
+    Case 1             '左
+        If ETank(Item).x >= 5 Then ETank(Item).x = ETank(Item).x - ETank(Item).FER(1)
+    Case 2             '右
+        If ETank(Item).x <= 395 Then ETank(Item).x = ETank(Item).x + ETank(Item).FER(2)
+    Case 3             '上
+        If ETank(Item).y >= 5 Then ETank(Item).y = ETank(Item).y - ETank(Item).FER(3)
+    Case 4             '下
+        If ETank(Item).y <= 395 Then ETank(Item).y = ETank(Item).y + ETank(Item).FER(4)
+    End Select
+End Sub
+Sub ETankBegin()
+    For r = 1 To 4
+        ETank(1).FER(r) = 2
+        ETank(2).FER(r) = 3
+        ETank(3).FER(r) = 2
+        ETank(4).FER(r) = 1
+        ETank(5).FER(r) = 2
+        ETank(6).FER(r) = 3
+        ETank(7).FER(r) = 2
+        ETank(8).FER(r) = 1
+        ETank(9).FER(r) = 2
+        ETank(10).FER(r) = 3
+        ETank(11).FER(r) = 2
+        ETank(12).FER(r) = 1
+        ETank(13).FER(r) = 2
+        ETank(14).FER(r) = 3
+        ETank(15).FER(r) = 2
+        ETank(16).FER(r) = 1
+    Next r
+End Sub
+Private Sub Losser_Timer()
+    'lblTitle.Caption = "任务失败！"
+    lblTitle.Visible = True
+    Losser.Enabled = False
+End Sub
+Private Sub VideoTimer_Timer()
+    If Vi = True And Tex <> "" Then
+        Picsl = Picsl + 1
+        Picsls = Picsl
+        file = Right$("000000" + Picsls, 6)
+        SavePicture PicBack.Image, Tex + "\" + file + ".bmp"
+    End If
+    If Vi = False And Tex <> "" Then
+        On Error GoTo Error
+        Picsl = Picsl + 1
+        Picsls = Picsl
+        file = Right$("000000" + Picsls, 6)
+        PicBack.Picture = LoadPicture(Tex + "\" + file + ".bmp")
+    End If
+Error:
+End Sub
+Private Sub RndEnemy_Timer()
+    ETank(1).FAS = Int(3) * Rnd + 1
+    ETank(2).FAS = Int(3) * Rnd + 1
+    ETank(3).FAS = Int(3) * Rnd + 1
+    ETank(4).FAS = Int(3) * Rnd + 1
+    ETank(5).FAS = Int(3) * Rnd + 1
+    ETank(6).FAS = Int(3) * Rnd + 1
+    ETank(7).FAS = Int(3) * Rnd + 1
+    ETank(8).FAS = Int(3) * Rnd + 1
+    ETank(9).FAS = Int(3) * Rnd + 1
+    ETank(10).FAS = Int(3) * Rnd + 1
+    ETank(11).FAS = Int(3) * Rnd + 1
+    ETank(12).FAS = Int(3) * Rnd + 1
+    ETank(13).FAS = Int(3) * Rnd + 1
+    ETank(14).FAS = Int(3) * Rnd + 1
+    ETank(15).FAS = Int(3) * Rnd + 1
+    ETank(16).FAS = Int(3) * Rnd + 1
+    
+    Etankshow
+    If ETank(1).FHP = 0 And ETank(2).FHP = 0 _
+        And ETank(3).FHP = 0 And ETank(4).FHP = 0 _
+        And ETank(5).FHP = 0 And ETank(6).FHP = 0 _
+        And ETank(7).FHP = 0 And ETank(8).FHP = 0 _
+        And ETank(9).FHP = 0 And ETank(10).FHP = 0 _
+        And ETank(11).FHP = 0 And ETank(12).FHP = 0 _
+        And ETank(13).FHP = 0 And ETank(14).FHP = 0 _
+        And ETank(15).FHP = 0 And ETank(16).FHP = 0 _
+        And Image3(0).Visible = False Then
+            Timer1.Enabled = False
+            RndEnemy.Enabled = False
+            Timer8.Enabled = False
+            Timer6.Enabled = True
+    End If
+    For d = 1 To 16
+        If ETank(d).FHP > 0 Then
+            ED(d) = Int(1) * Rnd
+            If ED(d) = 0 Then
+                EBBZD(d) = False
+                EBZD(d) = False
+                EL(d) = 0
+                EBL(d) = 0
+                c(d) = 0
+                Etankz(d).x = ETank(d).x
+                Etankz(d).y = ETank(d).y
+                Select Case ETank(d).FAS
+                Case 1
+                    ELD(d) = 1
+                Case 2
+                    ELD(d) = 2
+                Case 3
+                    ELD(d) = 3
+                Case 4
+                    ELD(d) = 4
+                End Select
+            End If
+        End If
+    Next d
+End Sub
+Sub eTankLd()
+    For d = 1 To 16
+        If ETank(d).FHP > 0 Then
+            Select Case ELD(d)
+            Case 1
+                c(d) = c(d) + 10
+                ELDD(d).x = Etankz(d).x - c(d) + 15
+                ELDD(d).y = Etankz(d).y + 8
+                Tomin ELDD(d).x, ELDD(d).y, 32, 16, 32, 0, 16, 16, PicBack.hDC, PicBZ(0).hDC
+            Case 2
+                c(d) = c(d) + 10
+                ELDD(d).x = Etankz(d).x + c(d)
+                ELDD(d).y = Etankz(d).y + 8
+                Tomin ELDD(d).x, ELDD(d).y, 48, 16, 48, 0, 16, 16, PicBack.hDC, PicBZ(0).hDC
+            Case 3
+                c(d) = c(d) + 10
+                ELDD(d).y = Etankz(d).y - c(d) + 15
+                ELDD(d).x = Etankz(d).x + 8
+                Tomin ELDD(d).x, ELDD(d).y, 0, 16, 0, 0, 16, 16, PicBack.hDC, PicBZ(0).hDC
+            Case 4
+                c(d) = c(d) + 10
+                ELDD(d).y = Etankz(d).y + c(d)
+                ELDD(d).x = Etankz(d).x + 8
+                Tomin ELDD(d).x, ELDD(d).y, 16, 16, 16, 0, 16, 16, PicBack.hDC, PicBZ(0).hDC
+            End Select
+        End If
+    Next d
+End Sub
+Sub HitEachCheck()
+    For d = 1 To 16
+        If ETank(d).FHP > 0 Then
+            If Mytank(1).x > ETank(d).x - 32 And Mytank(1).x < ETank(d).x + 32 _
+                And Mytank(1).y > ETank(d).y - 32 And Mytank(1).y < ETank(d).y + 32 Then
+                    Select Case ZD
+                    Case 1
+                        Mytank(1).FER(1) = 0
+                    Case 2
+                        Mytank(1).FER(2) = 0
+                    Case 3
+                        Mytank(1).FER(3) = 0
+                    Case 4
+                        Mytank(1).FER(4) = 0
+                    End Select
+                    If Mytank(1).x > ETank(d).x - 24 And Mytank(1).x < ETank(d).x + 24 _
+                        And Mytank(1).y > ETank(d).y - 24 And Mytank(1).y < ETank(d).y + 24 Then Mytank(1).y = ETank(d).y + 32
+                    If ETank(d).x < Mytank(1).x - 25 And ETank(d).x > Mytank(1).x - 32 And Mytank(1).x < 400 Then Mytank(1).x = ETank(d).x + 32
+                    If ETank(d).x > Mytank(1).x + 25 And ETank(d).x < Mytank(1).x + 32 And Mytank(1).x > 0 Then Mytank(1).x = ETank(d).x - 32
+                    If ETank(d).y < Mytank(1).y - 25 And ETank(d).y > Mytank(1).y - 32 And Mytank(1).y < 400 Then Mytank(1).y = ETank(d).y + 32
+                    If ETank(d).y > Mytank(1).y + 25 And ETank(d).y < Mytank(1).y + 32 And Mytank(1).y > 0 Then Mytank(1).y = ETank(d).y - 32
+            End If
+            If ETank(d).x > Mytank(1).x - 32 And ETank(d).x < Mytank(1).x + 32 _
+                And ETank(d).y > Mytank(1).y - 32 And ETank(d).y < Mytank(1).y + 32 Then
+                    Select Case ETank(d).FAS
+                    Case 1
+                        ETank(d).FER(1) = 0
+                    Case 2
+                        ETank(d).FER(2) = 0
+                    Case 3
+                        ETank(d).FER(3) = 0
+                    Case 4
+                        ETank(d).FER(4) = 0
+                    End Select
+                    If ETank(d).x > Mytank(1).x - 24 And ETank(d).x < Mytank(1).x + 24 _
+                        And ETank(d).y > Mytank(1).y - 24 And ETank(d).y < Mytank(1).y + 24 Then ETank(d).y = Mytank(1).y + 32
+                    If Mytank(1).x < ETank(d).x - 25 And Mytank(1).x > ETank(d).x - 32 And ETank(d).x < 395 Then ETank(d).x = Mytank(1).x + 32
+                    If Mytank(1).x > ETank(d).x + 25 And Mytank(1).x < ETank(d).x + 32 And ETank(d).x > 5 Then ETank(d).x = Mytank(1).x - 32
+                    If Mytank(1).y < ETank(d).y - 25 And Mytank(1).y > ETank(d).y - 32 And ETank(d).y < 395 Then ETank(d).y = Mytank(1).y + 32
+                    If Mytank(1).y > ETank(d).y + 25 And Mytank(1).y < ETank(d).y + 32 And ETank(d).y > 5 Then ETank(d).y = Mytank(1).y - 32
+            End If
+            For t = 1 To 16
+                If ETank(d).x > ETank(t).x - 32 And ETank(d).x < ETank(t).x + 32 _
+                    And ETank(d).y > ETank(t).y - 32 And ETank(d).y < ETank(t).y + 32 _
+                    And t <> d Then
+                        Select Case ETank(1).FAS
+                        Case 1
+                            ETank(d).FER(1) = 0
+                        Case 2
+                            ETank(d).FER(2) = 0
+                        Case 3
+                            ETank(d).FER(3) = 0
+                        Case 4
+                            ETank(d).FER(4) = 0
+                        End Select
+                        If ETank(d).x > ETank(t).x - 25 And ETank(d).x < ETank(t).x + 25 _
+                            And ETank(d).y > ETank(t).y - 25 And ETank(d).y < ETank(t).y + 25 Then ETank(d).y = ETank(t).y + 32
+                        If ETank(t).x < ETank(d).x - 26 And ETank(t).x > ETank(d).x - 32 And ETank(d).x < 395 Then ETank(d).x = ETank(t).x + 32
+                        If ETank(t).x > ETank(d).x + 26 And ETank(t).x < ETank(d).x + 32 And ETank(d).x > 5 Then ETank(d).x = ETank(t).x - 32
+                        If ETank(t).y < ETank(d).y - 26 And ETank(t).y > ETank(d).y - 32 And ETank(d).y < 395 Then ETank(d).y = ETank(t).y + 32
+                        If ETank(t).y > ETank(d).y + 26 And ETank(t).y < ETank(d).y + 32 And ETank(d).y > 5 Then ETank(d).y = ETank(t).y - 32
+                End If
+            Next t
+        End If
+    Next d
+End Sub
+Private Sub Timer5_Timer()
+    lblLevel.Caption = n
+    MainForm.Caption = "坦克大战—任务" & n
+    lblLife(0).Caption = Mytank(1).FHP
+End Sub
+Sub ExplodeBomb()
+    For d = 1 To 16
+        For t = 1 To 4
+        If ETank(d).FHP > 0 And LD > 0 Then
+            If ZDD(t).x > ETank(d).x - 16 And ZDD(t).x < ETank(d).x + 32 _
+                And ZDD(t).y > ETank(d).y - 16 And ZDD(t).y < ETank(d).y + 32 Then
+                ETank(d).FHP = ETank(d).FHP - 1
+                sndPlaySound App.path + "\bomb.wav", &H1
+                BBZD = True
+                BBZDL = t
+                LD = 0
+                i = 0
+                If ETank(d).FHP = 0 Then
+                    Rssx = Rssx - 1
+                    Select Case d
+                    Case 1
+                        ELX(1) = ELX(1) + 100
+                    Case 2
+                        ELX(2) = ELX(2) + 200
+                    Case 3
+                        ELX(3) = ELX(3) + 300
+                    Case 4
+                        ELX(4) = ELX(4) + 400
+                    Case 5
+                        ELX(1) = ELX(1) + 100
+                    Case 6
+                        ELX(2) = ELX(2) + 200
+                    Case 7
+                        ELX(3) = ELX(3) + 300
+                    Case 8
+                        ELX(4) = ELX(4) + 400
+                    Case 9
+                        ELX(1) = ELX(1) + 100
+                    Case 10
+                        ELX(2) = ELX(2) + 200
+                    Case 11
+                        ELX(3) = ELX(3) + 300
+                    Case 12
+                        ELX(4) = ELX(4) + 400
+                    Case 13
+                        ELX(1) = ELX(1) + 100
+                    Case 14
+                        ELX(2) = ELX(2) + 200
+                    Case 15
+                        ELX(3) = ELX(3) + 300
+                    Case 16
+                        ELX(4) = ELX(4) + 400
+                    End Select
+                    ETank(d).x = -100
+                    ETank(d).y = -100
+                    ELDD(d).x = ETank(d).x
+                    ELDD(d).y = ETank(d).y
+                End If
+            End If
+        End If
+        If Mytank(1).FHP > 0 And ELD(d) > 0 Then
+            If ELDD(d).x > Mytank(1).x - 16 And ELDD(d).x < Mytank(1).x + 32 _
+                And ELDD(d).y > Mytank(1).y - 16 And ELDD(d).y < Mytank(1).y + 32 Then
+                    If Mytank(1).Show = False Then
+                        Mytank(1).FHP = Mytank(1).FHP - 1
+                        Mytank(1).ZDS = 10
+                        Mytank(1).Show = False
+                        Born 0
+                        'Mytank(1).X = 139
+                        'Mytank(1).Y = 392
+                        For tx = 1 To 4
+                            Vy(tx) = 2
+                        Next tx
+                        Fvw = 0
+                        TQbx = False
+                    End If
+                    sndPlaySound App.path + "\bomb.wav", &H1
+                    EBBZD(d) = True
+                    ELD(d) = 0
+                    c(d) = 0
+            End If
+        End If
+        If ZDD(t).x > ELDD(d).x - 16 And ZDD(t).x < ELDD(d).x + 16 _
+            And ZDD(t).y > ELDD(d).y - 16 And ZDD(t).y < ELDD(d).y + 16 And LD > 0 And ELD(d) > 0 Then
+                ZDD(t).x = Mytank(1).x
+                ZDD(t).y = Mytank(1).y
+                LD = 0
+                i = 0
+                ELDD(d).x = ETank(d).x
+                ELDD(d).y = ETank(d).y
+                ELD(d) = 0
+                c(d) = 0
+        End If
+        If (ELDD(d).x > 200 And ELDD(d).x < 232 _
+            And ELDD(d).y > 392 And ELDD(d).y < 424) Or (Mytank(1).FHP = 0) _
+            Or (ZDD(t).x > 200 And ZDD(t).x < 232 _
+            And ZDD(t).y > 392 And ZDD(t).y < 424) Then '200,392
+                Timer1.Enabled = False
+                RndEnemy.Enabled = False
+                Timer8.Enabled = False
+                Losser.Enabled = True
+                sndPlaySound App.path + "\bomb.wav", &H1
+                King = True
+        End If
+        Next t
+    Next d
+End Sub
+Sub Etankshow()
+    CXWZ = Int(2) * Rnd + 1
+    cx = Int(15) * Rnd + 1
+    If ETank(cx).FHP = 0 And Rssx < 4 And MS > 0 Then
+        Select Case CXWZ
+        Case 1
+            ETank(cx).x = 5
+            ETank(cx).y = 5
+            MS = MS - 1
+            Image3(MS).Visible = False
+        Case 2
+            ETank(cx).x = 200
+            ETank(cx).y = 5
+            MS = MS - 1
+            Image3(MS).Visible = False
+        Case 3
+            ETank(cx).x = 400
+            ETank(cx).y = 5
+            MS = MS - 1
+            Image3(MS).Visible = False
+        End Select
+        If cx = 4 Or cx = 8 Or cx = 12 Or cx = 16 Then
+            ETank(cx).FHP = 4
+        Else
+            ETank(cx).FHP = 1
+        End If
+        Rssx = Rssx + 1
+    End If
+End Sub
+Private Sub Timer6_Timer()
+PicBack.Picture = Image4.Picture
+'shadowtext Str(ELX(1)), 10, 120, 5, vbWhite, picBack
+'shadowtext Str(ELX(2)), 10, 180, 5, vbWhite, picBack
+'shadowtext Str(ELX(3)), 10, 235, 5, vbWhite, picBack
+'shadowtext Str(ELX(4)), 10, 290, 5, vbWhite, picBack
+ELX(5) = ELX(1) + ELX(2) + ELX(3) + ELX(4)
+'shadowtext Str(ELX(5)), 80, 80, 5, vbWhite, picBack
+Timer7.Enabled = True
+End Sub
+Private Sub Timer7_Timer()
+    ni = n
+    ni = ni + 1
+    n = ni
+    MS = 20
+    Randomize
+    King = False
+    Vi = False
+    For r = 1 To ZQN
+        ZQ(r).Show = False
+    Next r
+    Mytank(1).x = 139
+    Mytank(1).y = 392
+    ZDD(tc).x = Mytank(1).x
+    ZDD(tc).y = Mytank(1).y
+    For t = 1 To 16
+        ETank(t).Show = False
+    Next t
+    For t = 1 To 4
+        Mytank(1).FER(t) = 2
+        ELX(t) = 0
+    Next t
+    For i = 0 To 19
+        Image3(i).Visible = True
+    Next i
+    Tomin Mytank(1).x, Mytank(1).y, 0, 32, 0, 0, 32, 26, PicBack.hDC, PicMytank(0).hDC
+    i = 1
+    ZD = 3
+    L1 = True
+    Read
+    BeginScreen
+    BeginTo
+    ETankBegin
+    Timer1.Enabled = False
+    For d = 1 To 16
+        ETank(d).x = -100
+        ETank(d).y = -100
+        ELDD(d).x = ETank(d).x
+        ELDD(d).y = ETank(d).y
+        ELD(d) = 0
+        c(d) = 0
+    Next d
+    ZDD(tc).x = Mytank(1).x
+    ZDD(tc).y = Mytank(1).y
+    LD = 0
+    i = 0
+    Image5.Visible = False
+    Timer6.Enabled = False
+    Timer1.Enabled = True
+    RndEnemy.Enabled = True
+    Timer8.Enabled = True
+    Timer7.Enabled = False
+End Sub
+Private Sub Timer8_Timer()
+    For d = 1 To 6
+        Ta(d).x = -100
+        Ta(d).y = -100
+    Next d
+    RndEnemy.Enabled = True
+    Timers = False
+    'Image5.Visible = False
+    If WD = False Then Mytank(1).Show = False
+    TaS = Int(12) * Rnd + 1
+    If TaS < 7 Then
+        Ta(TaS).x = Int(400) * Rnd
+        Ta(TaS).y = Int(400) * Rnd
+    End If
+End Sub
+Sub Bw()
+    If Mytank(1).x > Ta(1).x - 32 And Mytank(1).x < Ta(1).x + 32 _
+        And Mytank(1).y > Ta(1).y - 32 And Mytank(1).y < Ta(1).y + 32 Then
+            KinTQ = True
+            Ta(1).x = -100
+            Ta(1).y = -100
+    End If
+    If Mytank(1).x > Ta(2).x - 32 And Mytank(1).x < Ta(2).x + 32 _
+        And Mytank(1).y > Ta(2).y - 32 And Mytank(1).y < Ta(2).y + 32 Then
+            Timers = True
+            RndEnemy.Enabled = False
+            Ta(2).x = -100
+            Ta(2).y = -100
+    End If
+    If Mytank(1).x > Ta(3).x - 32 And Mytank(1).x < Ta(3).x + 32 _
+        And Mytank(1).y > Ta(3).y - 32 And Mytank(1).y < Ta(3).y + 32 Then
+            For d = 1 To 16
+                ETank(d).FHP = 0
+                Rssx = 0
+            Next d
+            sndPlaySound App.path + "\bomb.wav", &H1
+            Ta(3).x = -100
+            Ta(3).y = -100
+    End If
+    If Mytank(1).x > Ta(4).x - 32 And Mytank(1).x < Ta(4).x + 32 _
+        And Mytank(1).y > Ta(4).y - 32 And Mytank(1).y < Ta(4).y + 32 Then
+            Mytank(1).Show = True
+            'Image5.Visible = True
+            Ta(4).x = -100
+            Ta(4).y = -100
+    End If
+    If Mytank(1).x > Ta(5).x - 32 And Mytank(1).x < Ta(5).x + 32 _
+        And Mytank(1).y > Ta(5).y - 32 And Mytank(1).y < Ta(5).y + 32 Then
+            Select Case Fvw
+            Case 0
+                Mytank(1).ZDS = 15
+                For t = 1 To 4
+                    Vy(t) = 3
+                Next t
+                Ta(5).x = -100
+                Ta(5).y = -100
+                Fvw = Fvw + 1
+            Case 1
+                TQbx = True
+                Ta(5).x = -100
+                Ta(5).y = -100
+            End Select
+    End If
+    If Mytank(1).x > Ta(6).x - 32 And Mytank(1).x < Ta(6).x + 32 _
+        And Mytank(1).y > Ta(6).y - 32 And Mytank(1).y < Ta(6).y + 32 Then
+            Mytank(1).FHP = Mytank(1).FHP + 1
+            Ta(6).x = -100
+            Ta(6).y = -100
+    End If
+End Sub
+Private Sub ZTANK_Click()
+    CTANK.Checked = False
+    ZTANK.Checked = True
+End Sub
+
+Sub Born(Optional ByVal t As Integer = 0)
+    If t = 0 Then
+        BornKeeper.Interval = 500
+    Else
+        Mytank(1).ZDS = 10
+        Mytank(1).x = 139
+        Mytank(1).y = 392
+        Mytank(1).Show = True        'Mytank(1).FAS = 1
+    End If
+End Sub
+
+
+
+Sub BeginScreen() 
+    For j(4) = 1 To HYN
+        BitBlt PicBack.hDC, HY(j(4)).X, HY(j(4)).Y, 16, 16, PicDX(3).hDC, 0, 0, SRCCOPY
+        If Mytank(1).X > HY(j(4)).X - 28 And Mytank(1).X < HY(j(4)).X + 16 _
+            And Mytank(1).Y > HY(j(4)).Y - 28 And Mytank(1).Y < HY(j(4)).Y + 16 Then
+                Select Case ZD
+                Case 1
+                    Mytank(1).FER(1) = 0
+                    Mytank(1).X = HY(j(4)).X + 16
+                Case 2
+                    Mytank(1).FER(2) = 0
+                    Mytank(1).X = HY(j(4)).X - 28
+                Case 3
+                    Mytank(1).FER(3) = 0
+                    Mytank(1).Y = HY(j(4)).Y + 16
+                Case 4
+                    Mytank(1).FER(4) = 0
+                    Mytank(1).Y = HY(j(4)).Y - 28
+                End Select
+        End If
+        For t = 1 To 16
+            If ETank(t).X > HY(j(4)).X - 32 And ETank(t).X < HY(j(4)).X + 16 _
+                And ETank(t).Y > HY(j(4)).Y - 32 And ETank(t).Y < HY(j(4)).Y + 16 Then
+                Select Case ETank(t).FAS
+                Case 1
+                    ETank(t).FER(1) = 0
+                    ETank(t).X = HY(j(4)).X + 16
+                Case 2
+                    ETank(t).FER(2) = 0
+                    ETank(t).X = HY(j(4)).X - 32
+                Case 3
+                    ETank(t).FER(3) = 0
+                    ETank(t).Y = HY(j(4)).Y + 16
+                Case 4
+                    ETank(t).FER(4) = 0
+                    ETank(t).Y = HY(j(4)).Y - 32
+                End Select
+            End If
+        Next t
+    Next j(4)
+End Sub
+
+Sub BeginTo()
+
+    For j(1) = 1 To ZQN
+        If ZQ(j(1)).Show = False Then
+            BitBlt PicBack.hDC, ZQ(j(1)).X, ZQ(j(1)).Y, 16, 16, PicDX(0).hDC, 0, 0, SRCCOPY
+            If Mytank(1).X > ZQ(j(1)).X - 28 And Mytank(1).X < ZQ(j(1)).X + 16 _
+                And Mytank(1).Y > ZQ(j(1)).Y - 28 And Mytank(1).Y < ZQ(j(1)).Y + 16 Then
+                    Select Case ZD
+                    Case 1
+                        Mytank(1).FER(1) = 0
+                        Mytank(1).X = ZQ(j(1)).X + 16
+                    Case 2
+                        Mytank(1).FER(2) = 0
+                        Mytank(1).X = ZQ(j(1)).X - 28
+                    Case 3
+                        Mytank(1).FER(3) = 0
+                        Mytank(1).Y = ZQ(j(1)).Y + 16
+                    Case 4
+                        Mytank(1).FER(4) = 0
+                        Mytank(1).Y = ZQ(j(1)).Y - 28
+                    End Select
+            End If
+            For t = 1 To 16
+                If ETank(t).X > ZQ(j(1)).X - 32 And ETank(t).X < ZQ(j(1)).X + 16 _
+                    And ETank(t).Y > ZQ(j(1)).Y - 32 And ETank(t).Y < ZQ(j(1)).Y + 16 Then
+                        Select Case ETank(t).FAS
+                        Case 1
+                            ETank(t).FER(1) = 0
+                            ETank(t).X = ZQ(j(1)).X + 16
+                        Case 2
+                            ETank(t).FER(2) = 0
+                            ETank(t).X = ZQ(j(1)).X - 32
+                        Case 3
+                            ETank(t).FER(3) = 0
+                            ETank(t).Y = ZQ(j(1)).Y + 16
+                        Case 4
+                            ETank(t).FER(4) = 0
+                            ETank(t).Y = ZQ(j(1)).Y - 32
+                        End Select
+                End If
+            Next t
+            If ZDD(tc).X > ZQ(j(1)).X - 16 And ZDD(tc).X < ZQ(j(1)).X + 16 _
+                And ZDD(tc).Y > ZQ(j(1)).Y - 16 And ZDD(tc).Y < ZQ(j(1)).Y + 16 Then
+                    ZQ(j(1)).Show = True
+                    BZD = True
+                    LD = 0
+                    i = 0
+            End If
+            For d = 1 To 16 '
+                If ELDD(d).X > ZQ(j(1)).X - 16 And ELDD(d).X < ZQ(j(1)).X + 16 _
+                    And ELDD(d).Y > ZQ(j(1)).Y - 16 And ELDD(d).Y < ZQ(j(1)).Y + 16 Then
+                        ZQ(j(1)).Show = True
+                        EBZD(d) = True
+                        ELD(d) = 0
+                        c(d) = 0
+                End If
+            Next d
+        End If
+    Next j(1)
+    For j(2) = 1 To CDN
+        Tomin CD(j(2)).X, CD(j(2)).Y, 0, 16, 0, 0, 16, 16, PicBack.hDC, PicDX(1).hDC
+    Next j(2)
+    For j(3) = 1 To TQN
+        If TQ(j(3)).Show = False Then
+            BitBlt PicBack.hDC, TQ(j(3)).X, TQ(j(3)).Y, 16, 16, PicDX(2).hDC, 0, 0, SRCCOPY
+            If Mytank(1).X > TQ(j(3)).X - 28 And Mytank(1).X < TQ(j(3)).X + 16 _
+                And Mytank(1).Y > TQ(j(3)).Y - 28 And Mytank(1).Y < TQ(j(3)).Y + 16 Then
+                    Select Case ZD
+                    Case 1
+                        Mytank(1).FER(1) = 0
+                        Mytank(1).X = TQ(j(3)).X + 16
+                    Case 2
+                        Mytank(1).FER(2) = 0
+                        Mytank(1).X = TQ(j(3)).X - 28
+                    Case 3
+                        Mytank(1).FER(3) = 0
+                        Mytank(1).Y = TQ(j(3)).Y + 16
+                    Case 4
+                        Mytank(1).FER(4) = 0
+                        Mytank(1).Y = TQ(j(3)).Y - 28
+                    End Select
+            End If
+            For t = 1 To 16
+                If ETank(t).X > TQ(j(3)).X - 32 And ETank(t).X < TQ(j(3)).X + 16 _
+                    And ETank(t).Y > TQ(j(3)).Y - 32 And ETank(t).Y < TQ(j(3)).Y + 16 Then
+                        Select Case ETank(t).FAS
+                        Case 1
+                            ETank(t).FER(1) = 0
+                            ETank(t).X = TQ(j(3)).X + 16
+                        Case 2
+                            ETank(t).FER(2) = 0
+                            ETank(t).X = TQ(j(3)).X - 32
+                        Case 3
+                            ETank(t).FER(3) = 0
+                            ETank(t).Y = TQ(j(3)).Y + 16
+                        Case 4
+                            ETank(t).FER(4) = 0
+                            ETank(t).Y = TQ(j(3)).Y - 32
+                        End Select
+                End If
+            Next t
+            If ZDD(tc).X > TQ(j(3)).X - 16 And ZDD(tc).X < TQ(j(3)).X + 16 _
+                And ZDD(tc).Y > TQ(j(3)).Y - 16 And ZDD(tc).Y < TQ(j(3)).Y + 16 Then
+                    BZD = True
+                    LD = 0
+                    i = 0
+                    If TQbx = True Then
+                        TQ(j(3)).Show = True
+                    End If
+            End If
+            For d = 1 To 16
+                If ELDD(d).X > TQ(j(3)).X - 16 And ELDD(d).X < TQ(j(3)).X + 16 _
+                    And ELDD(d).Y > TQ(j(3)).Y - 16 And ELDD(d).Y < TQ(j(3)).Y + 16 Then
+                        EBZD(d) = True
+                        ELD(d) = 0
+                        c(d) = 0
+                End If
+            Next d
+        End If
+    Next j(3)
+End Sub

@@ -1,0 +1,219 @@
+                Case TS_UP
+                    xi = .X \ WG: xb = .X - xi * WG
+                    yi = .Y \ WG: yb = .Y - yi * WG
+                    If yb < .FER And yi > 0 Then
+                        If Map(xi, yi - 1) = 1 Or Map(xi, yi - 1) = 3 Or Map(xi, yi - 1) = 4 Then GoTo IFCAN_T
+                        If Map(xi + 1, yi - 1) = 1 Or Map(xi + 1, yi - 1) = 3 Or Map(xi + 1, yi - 1) = 4 Then GoTo IFCAN_T
+                        If xi < 24 Then If xb > 4 And (Map(xi + 2, yi - 1) = 1 Or Map(xi + 2, yi - 1) = 3 Or Map(xi + 2, yi - 1) = 4) Then GoTo IFCAN_T
+                    End If
+                    For j = 0 To 3
+                        If EYTank(j).Show And i <> j Then
+                            If .Y - EYTank(j).Y < .FER + LEN_TANK And .Y > EYTank(j).Y _
+                                And .X > EYTank(j).X - LEN_TANK And .X < EYTank(j).X + LEN_TANK Then GoTo IFCAN_T
+                        End If
+                    Next j
+                    For j = 0 To 1
+                        If PLTank(j).Show Then
+                            If .Y - PLTank(j).Y < .FER + LEN_TANK And .Y > PLTank(j).Y _
+                                And .X > PLTank(j).X - LEN_TANK And .X < PLTank(j).X + LEN_TANK Then GoTo IFCAN_T
+                        End If
+                    Next j
+                    If .Y >= .FER Then .Y = .Y - .FER Else GoTo IFCAN_T
+                Case TS_DOWN
+                    xi = .X \ WG: xb = .X - xi * WG
+                    yi = (.Y + LEN_TANK) \ WG: yb = .Y + LEN_TANK - yi * WG
+                    If yb < .FER And yi < 26 Then
+                        If Map(xi, yi) = 1 Or Map(xi, yi) = 3 Or Map(xi, yi) = 4 Then GoTo IFCAN_T
+                        If Map(xi + 1, yi) = 1 Or Map(xi + 1, yi) = 3 Or Map(xi + 1, yi) = 4 Then GoTo IFCAN_T
+                        If xi < 24 Then If xb > 4 And (Map(xi + 2, yi) = 1 Or Map(xi + 2, yi) = 3 Or Map(xi + 2, yi) = 4) Then GoTo IFCAN_T
+                    End If
+                Case TS_LEFT
+                    xi = .X \ WG: xb = .X - xi * WG
+                    yi = .Y \ WG: yb = .Y - yi * WG
+                    If xb < .FER And xi > 0 Then
+                        If Map(xi - 1, yi) = 1 Or Map(xi - 1, yi) = 3 Or Map(xi - 1, yi) = 4 Then GoTo IFCAN_T
+                        If Map(xi - 1, yi + 1) = 1 Or Map(xi - 1, yi + 1) = 3 Or Map(xi - 1, yi + 1) = 4 Then GoTo IFCAN_T
+                        If yi < 24 Then If yb > 4 And (Map(xi - 1, yi + 2) = 1 Or Map(xi - 1, yi + 2) = 3 Or Map(xi - 1, yi + 2) = 4) Then GoTo IFCAN_T
+                    End If
+
+                Case TS_RIGHT
+                    xi = (.X + LEN_TANK) \ WG: xb = .X + LEN_TANK - xi * WG
+                    yi = .Y \ WG: yb = .Y - yi * WG
+                    If xb < .FER And xi < 26 Then
+                        If Map(xi, yi) = 1 Or Map(xi, yi) = 3 Or Map(xi, yi) = 4 Then GoTo IFCAN_T
+                        If Map(xi, yi + 1) = 1 Or Map(xi, yi + 1) = 3 Or Map(xi, yi + 1) = 4 Then GoTo IFCAN_T
+                        If yi < 24 Then If yb > 4 And (Map(xi, yi + 2) = 1 Or Map(xi, yi + 2) = 3 Or Map(xi, yi + 2) = 4) Then GoTo IFCAN_T
+                    End If
+
+                End Select
+
+
+                Select Case .FANG
+                Case TS_UP
+                    xi = .X \ WG: xb = .X - xi * WG
+                    yi = .Y \ WG: yb = .Y - yi * WG
+                    If yi > 0 Then
+                        If Map(xi, yi - 1) > 5 Then
+                            Map(xi, yi - 1) = 0
+                            .Show = False
+                        End If
+                        If Map(xi, yi - 1) = 1 Then
+                            If .TYPE Then Map(xi, yi - 1) = 0 Else Map(xi, yi - 1) = MAPZN + .FANG
+                            .Show = False
+                        End If
+                        If Map(xi, yi - 1) = 3 Then
+                            If .TYPE Then Map(xi, yi - 1) = 0
+                            sndPlaySound App_Path & "HIT.wav", 1
+                            .Show = False
+                        End If
+                        
+                        If xb > HWG Then
+                            If Map(xi + 1, yi - 1) > 5 Then
+                                Map(xi + 1, yi - 1) = 0
+                                .Show = False
+                            End If
+                            If Map(xi + 1, yi - 1) = 1 Then
+                                If .TYPE Then Map(xi + 1, yi - 1) = 0 Else Map(xi + 1, yi - 1) = MAPZN + .FANG
+                                .Show = False
+                            End If
+                            If Map(xi + 1, yi - 1) = 3 Then
+                                If .TYPE Then Map(xi + 1, yi - 1) = 0
+                                sndPlaySound App_Path & "HIT.wav", 1
+                                .Show = False
+                            End If
+                        End If
+                    End If
+            
+                    .Y = .Y - VD_EBULLET
+                    If .Y < 0 Then .Show = False
+                Case TS_DOWN
+                    xi = .X \ WG: xb = .X - xi * WG
+                    yi = (.Y + HWG) \ WG: yb = .Y + HWG - yi * WG
+                    If yi < 26 Then
+                        If Map(xi, yi) > 5 Then
+                            Map(xi, yi) = 0
+                            .Show = False
+                        End If
+                        If Map(xi, yi) = 1 Then
+                            If .TYPE Then Map(xi, yi) = 0 Else Map(xi, yi) = MAPZN + .FANG
+                            .Show = False
+                        End If
+                        If Map(xi, yi) = 3 Then
+                            If .TYPE Then Map(xi, yi) = 0
+                            sndPlaySound App_Path & "HIT.wav", 1
+                            .Show = False
+                        End If
+                        
+                        If xb > HWG Then
+                            If Map(xi + 1, yi) > 5 Then
+                                Map(xi + 1, yi) = 0
+                                .Show = False
+                            End If
+                            If Map(xi + 1, yi) = 1 Then
+                                If .TYPE Then Map(xi + 1, yi) = 0 Else Map(xi + 1, yi) = MAPZN + .FANG
+                                .Show = False
+                            End If
+                            If Map(xi + 1, yi) = 3 Then
+                                If .TYPE Then Map(xi + 1, yi) = 0
+                                sndPlaySound App_Path & "HIT.wav", 1
+                                .Show = False
+                            End If
+                        End If
+                        If yi = 24 And (xi = 12 Or xi = 13) Then
+                            BitBlt PicBack.hdc, 12 * WG, 24 * WG, LEN_BLOCK, LEN_BLOCK, PicIcon(0).hdc, 0, 0, SRCCOPY
+                            GameOver KingDie
+                            KingDie = True
+                        End If
+                    End If
+                    .Y = .Y + VD_EBULLET
+                    If .Y > 420 Then .Show = False
+                Case TS_LEFT
+                    xi = .X \ WG: xb = .X - xi * WG
+                    yi = .Y \ WG: yb = .Y - yi * WG
+                    If xi > 0 Then
+                        If Map(xi - 1, yi) > 5 Then
+                            Map(xi - 1, yi) = 0
+                            .Show = False
+                        End If
+                        If Map(xi - 1, yi) = 1 Then
+                            If .TYPE Then Map(xi - 1, yi) = 0 Else Map(xi - 1, yi) = MAPZN + .FANG
+                            'Map(xi - 1, yi) = 0
+                            .Show = False
+                        End If
+                        If Map(xi - 1, yi) = 3 Then
+                            If .TYPE Then Map(xi - 1, yi) = 0
+                            sndPlaySound App_Path & "HIT.wav", 1
+                            .Show = False
+                        End If
+                        
+                        If yb > HWG Then
+                            If Map(xi - 1, yi + 1) > 5 Then
+                                Map(xi - 1, yi + 1) = 0
+                                .Show = False
+                            End If
+                            If Map(xi - 1, yi + 1) = 1 Then
+                                If .TYPE Then Map(xi - 1, yi + 1) = 0 Else Map(xi - 1, yi + 1) = MAPZN + .FANG
+                                'Map(xi - 1, yi + 1) = 0
+                                .Show = False
+                            End If
+                            If Map(xi - 1, yi + 1) = 3 Then
+                                If .TYPE Then Map(xi - 1, yi + 1) = 0
+                                sndPlaySound App_Path & "HIT.wav", 1
+                                .Show = False
+                            End If
+                        End If
+                        
+                        If xi = 13 And (yi = 24 Or yi = 25) Then
+                            BitBlt PicBack.hdc, 12 * WG, 24 * WG, LEN_BLOCK, LEN_BLOCK, PicIcon(0).hdc, 0, 0, SRCCOPY
+                            GameOver KingDie
+                            KingDie = True
+                        End If
+                    End If
+                    .X = .X - VD_EBULLET
+                    If .X < 0 Then .Show = False
+                Case TS_RIGHT
+                    xi = (.X + HWG) \ WG: xb = .X + HWG - xi * WG
+                    yi = .Y \ WG: yb = .Y - yi * WG
+                    If xi < 26 Then
+                        If Map(xi, yi) > 5 Then
+                            Map(xi, yi) = 0
+                            .Show = False
+                        End If
+                        If Map(xi, yi) = 1 Then
+                            If .TYPE Then Map(xi, yi) = 0 Else Map(xi, yi) = MAPZN + .FANG
+                            .Show = False
+                        End If
+
+                        
+                        If Map(xi, yi) = 3 Then
+                            If .TYPE Then Map(xi, yi) = 0
+                            sndPlaySound App_Path & "HIT.wav", 1
+                            .Show = False
+                        End If
+                        
+                        If yb > HWG Then
+                            If Map(xi, yi + 1) > 5 Then
+                                Map(xi, yi + 1) = 0
+                                .Show = False
+                            End If
+                            If Map(xi, yi + 1) = 1 Then
+                                If .TYPE Then Map(xi, yi + 1) = 0 Else Map(xi, yi + 1) = MAPZN + .FANG
+                                .Show = False
+                            End If
+
+                            If Map(xi, yi + 1) = 3 Then
+                                If .TYPE Then Map(xi, yi + 1) = 0
+                                sndPlaySound App_Path & "HIT.wav", 1
+                                .Show = False
+                            End If
+                        End If
+                        
+                        If xi = 12 And (yi = 24 Or yi = 25) Then
+                            BitBlt PicBack.hdc, 12 * WG, 24 * WG, LEN_BLOCK, LEN_BLOCK, PicIcon(0).hdc, 0, 0, SRCCOPY
+                            GameOver KingDie
+                            KingDie = True
+                        End If
+                    End If
+                    .X = .X + VD_EBULLET
+                    If .X > 420 Then .Show = False
+                End Select

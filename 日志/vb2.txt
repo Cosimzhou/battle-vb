@@ -1,0 +1,67 @@
+        With Setting
+            .Player1_UP = vbKeyUp
+            .Player1_DOWN = vbKeyDown
+            .Player1_LEFT = vbKeyLeft
+            .Player1_RIGHT = vbKeyRight
+            .Player1_SHOOT = vbKeySpace
+            .Player2_UP = vbKeyW
+            .Player2_DOWN = vbKeyS
+            .Player2_LEFT = vbKeyA
+            .Player2_RIGHT = vbKeyD
+            .Player2_SHOOT = vbKeyJ
+            .DEPTH = 0
+        End With
+        Open App_Path & "Tank.cfg" For Binary Access Write As 1 Len = Len(Setting)
+        Put #1, , Setting
+        Close
+        APP2 = LoadResData("MAPFILE", "MAPBIN")
+        Counter = UBound(APP2)
+        ReDim Preserve APP2(Counter) As Byte
+        Open App_Path & "Map.bin " For Binary Access Write As #1
+            Put #1, , APP2
+        Close #1
+    '    BANG                  WAVE    DISCARDABLE     "E:\sound\Bang.wav"
+    '     FARE                  WAVE    DISCARDABLE     "E:\sound\Fanfare.wav"
+    '     FIRE                  WAVE    DISCARDABLE     "E:\sound\Gunfire.wav"
+    '     HIT                   WAVE    DISCARDABLE     "E:\sound\hit.wav"
+    '     PEOW                  WAVE    DISCARDABLE     "E:\sound\Peow.wav"
+    '     MAPFILE               MAPBIN  DISCARDABLE     "E:\sound\Map.bin"
+        APP2 = LoadResData("BANG", "WAVE")
+        Counter = UBound(APP2)
+        ReDim Preserve APP2(Counter) As Byte
+        Open App_Path & "bang.wav " For Binary Access Write As #1
+            Put #1, , APP2
+        Close #1
+        
+        APP2 = LoadResData("FARE", "WAVE")
+        Counter = UBound(APP2)
+        ReDim Preserve APP2(Counter) As Byte
+        Open App_Path & "Fanfare.wav " For Binary Access Write As #1
+            Put #1, , APP2
+        Close #1
+        
+        APP2 = LoadResData("FIRE", "WAVE")
+        Counter = UBound(APP2)
+        ReDim Preserve APP2(Counter) As Byte
+        Open App_Path & "fire.wav " For Binary Access Write As #1
+            Put #1, , APP2
+        Close #1
+        
+        APP2 = LoadResData("hit", "WAVE")
+        Counter = UBound(APP2)
+        ReDim Preserve APP2(Counter) As Byte
+        Open App_Path & "hit.wav " For Binary Access Write As #1
+            Put #1, , APP2
+        Close #1
+        
+        APP2 = LoadResData("peow", "WAVE")
+        Counter = UBound(APP2)
+        ReDim Preserve APP2(Counter) As Byte
+        Open App_Path & "peow.wav " For Binary Access Write As #1
+            Put #1, , APP2
+        Close #1
+        
+        
+        MkDir App_Path & "Image"
+        MkDir App_Path & "Temp"
+            
